@@ -1,6 +1,9 @@
-package com.geekbrains.tests.repository
+package repository
 
 import com.geekbrains.tests.model.SearchResponse
+import com.geekbrains.tests.repository.GitHubApi
+import com.geekbrains.tests.repository.RepositoryCallback
+import com.geekbrains.tests.repository.RepositoryContract
 
 import retrofit2.Call
 import retrofit2.Callback

@@ -117,6 +117,7 @@ class DetailsActivityTest {
     fun activityCreateIntent_NotNull() {
         val intent = DetailsActivity.getIntent(context, 0)
         assertNotNull(intent)
+
     }
 
     @Test
