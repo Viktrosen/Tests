@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity(), ViewSearchContract {
         }
         setQueryListener()
         setRecyclerView()
+        setOnClickListener()
     }
 
     private fun setRecyclerView() {
@@ -64,6 +65,21 @@ class MainActivity : AppCompatActivity(), ViewSearchContract {
             }
             false
         })
+    }
+
+    private fun setOnClickListener() {
+        searchButton.setOnClickListener {
+            val query = searchEditText.text.toString()
+            if (query.isNotBlank()) {
+                presenter.searchGitHub(query)
+            } else {
+                Toast.makeText(
+                    this@MainActivity,
+                    getString(R.string.enter_search_word),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     /*private fun createRepository(): RepositoryContract {

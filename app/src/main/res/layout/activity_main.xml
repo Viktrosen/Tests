@@ -55,4 +55,13 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintTop_toBottomOf="@id/totalCountTextView" />
 
+    <Button
+        android:id="@+id/searchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/search"
+        app:layout_constraintEnd_toEndOf="@+id/toDetailsActivityButton"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

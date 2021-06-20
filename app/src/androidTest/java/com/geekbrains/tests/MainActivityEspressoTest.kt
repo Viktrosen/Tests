@@ -1,11 +1,13 @@
 package com.geekbrains.tests
 
+import android.content.Context
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
@@ -13,6 +15,10 @@ import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.Until
 import com.geekbrains.tests.view.search.MainActivity
 import junit.framework.TestCase
 import org.hamcrest.Matcher
@@ -26,20 +32,22 @@ class MainActivityEspressoTest {
 
     private lateinit var scenario: ActivityScenario<MainActivity>
 
+    private val uiDevice: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+
+    //Контекст нам понадобится для запуска нужных экранов и получения packageName
+    private val context = ApplicationProvider.getApplicationContext<Context>()
+
+    //Путь к классам нашего приложения, которые мы будем тестировать
+    private val packageName = context.packageName
+    companion object {
+        private const val TIMEOUT = 5000L
+    }
+
     @Before
     fun setup(){
         scenario = ActivityScenario.launch(MainActivity::class.java)
     }
 
-    private fun delay(): ViewAction {
-        return object : ViewAction{
-            override fun getConstraints(): Matcher<View> = isRoot()
-            override fun getDescription(): String = "wait for $2 seconds"
-            override fun perform(uiController: UiController?, view: View?) {
-                uiController?.loopMainThreadForAtLeast(2000)
-            }
-        }
-    }
 
     @Test
     fun activity_notNull(){
@@ -90,8 +98,26 @@ class MainActivityEspressoTest {
     }
 
 
-
     @Test
+    fun activitySearch_isWorking(){
+        uiDevice.findObject(By.res(packageName,"searchEditText")).click()
+        uiDevice.findObject(By.res(packageName,"searchButton")).click()
+
+        if (BuildConfig.TYPE == MainActivity.FAKE) {
+            TestCase.assertEquals("Number of results: 42",uiDevice.findObject(By.res(packageName,"totalCountTextView")).text,)
+
+        } else {
+            val changedText =
+                uiDevice.wait(
+                    Until.findObject(By.res(packageName, "totalCountTextView")),
+                    TIMEOUT
+                )
+            //Убеждаемся, что сервер вернул корректный результат. Обратите внимание, что количество
+            //результатов может варьироваться во времени, потому что количество репозиториев постоянно меняется.
+            TestCase.assertEquals(changedText.text.toString(), "Number of results: 668")
+        }
+    }
+    /*@Test
     fun activitySearch_IsWorking() {
         onView(withId(R.id.searchEditText)).perform(click())
         onView(withId(R.id.searchEditText)).perform(replaceText("algol"), closeSoftKeyboard())
@@ -104,6 +130,15 @@ class MainActivityEspressoTest {
             onView(withId(R.id.totalCountTextView)).check(matches(withText("Number of results: 2283")))
         }
 
+    }*/
+
+    @Test
+    fun toDetailsScreen_test(){
+        uiDevice.findObject(By.res(packageName,"searchEditText")).click()
+        uiDevice.findObject(By.res(packageName,"searchButton")).click()
+
+        uiDevice.findObject(By.res(packageName,"toDetailsActivityButton")).click()
+        TestCase.assertEquals("Number of results: 668",uiDevice.findObject(By.res("totalCountTextView")).text)
     }
 
 
