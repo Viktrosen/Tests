@@ -98,7 +98,7 @@ class MainActivityEspressoTest {
     }
 
 
-    @Test
+    /*@Test
     fun activitySearch_isWorking(){
         uiDevice.findObject(By.res(packageName,"searchEditText")).click()
         uiDevice.findObject(By.res(packageName,"searchButton")).click()
@@ -116,21 +116,15 @@ class MainActivityEspressoTest {
             //результатов может варьироваться во времени, потому что количество репозиториев постоянно меняется.
             TestCase.assertEquals(changedText.text.toString(), "Number of results: 668")
         }
-    }
-    /*@Test
+    }*/
+    @Test
     fun activitySearch_IsWorking() {
         onView(withId(R.id.searchEditText)).perform(click())
         onView(withId(R.id.searchEditText)).perform(replaceText("algol"), closeSoftKeyboard())
         onView(withId(R.id.searchEditText)).perform(pressImeActionButton())
 
-        if (BuildConfig.TYPE == MainActivity.FAKE) {
-            onView(withId(R.id.totalCountTextView)).check(matches(withText("Number of results: 42")))
-        } else {
-            onView(isRoot()).perform(delay())
-            onView(withId(R.id.totalCountTextView)).check(matches(withText("Number of results: 2283")))
-        }
-
-    }*/
+        onView(withId(R.id.totalCountTextView)).check(matches(withText("Number of results: 42")))
+    }
 
     @Test
     fun toDetailsScreen_test(){
