@@ -8,13 +8,11 @@ import com.geekbrains.tests.view.details.DetailsActivity
 import com.geekbrains.tests.view.details.ViewDetailsContract
 import com.nhaarman.mockito_kotlin.atLeastOnce
 import junit.framework.Assert.assertEquals
-import junit.framework.TestCase
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
-import org.mockito.MockitoAnnotations.initMocks
 
 class DetailsPresenterTest {
 
