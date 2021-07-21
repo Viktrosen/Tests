@@ -1,56 +1,47 @@
 package com.geekbrains.tests.view.details
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.geekbrains.tests.R
-import com.geekbrains.tests.presenter.details.DetailsPresenter
-import com.geekbrains.tests.presenter.details.PresenterDetailsContract
 import kotlinx.android.synthetic.main.activity_details.*
-import java.util.*
+import org.koin.android.viewmodel.ext.android.viewModel
 
-class DetailsActivity : AppCompatActivity(), ViewDetailsContract {
+class DetailsActivity : AppCompatActivity() {
 
-    private val presenter: PresenterDetailsContract = DetailsPresenter(this)
+    private val viewModel: DetailsViewModel by viewModel()
+    private val adapter = DetailsResultAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
-        setUI()
-        presenter.onAttach()
+        setRecyclerView()
+        viewModel.getData()
+        viewModel.subscribeToLiveData().observe(this) { onStateChange(it) }
     }
 
-    private fun setUI() {
-        val count = intent.getIntExtra(TOTAL_COUNT_EXTRA, 0)
-        presenter.setCounter(count)
-        setCountText(count)
-        decrementButton.setOnClickListener { presenter.onDecrement() }
-        incrementButton.setOnClickListener { presenter.onIncrement() }
-    }
-
-    override fun setCount(count: Int) {
-        setCountText(count)
-    }
-
-    private fun setCountText(count: Int) {
-        totalCountTextView.text =
-            String.format(Locale.getDefault(), getString(R.string.results_count), count)
-    }
-
-    public override fun onDestroy() {
-        super.onDestroy()
-        presenter.onDetach()
-    }
-
-    companion object {
-
-        const val TOTAL_COUNT_EXTRA = "TOTAL_COUNT_EXTRA"
-
-        fun getIntent(context: Context, totalCount: Int): Intent {
-            return Intent(context, DetailsActivity::class.java).apply {
-                putExtra(TOTAL_COUNT_EXTRA, totalCount)
+    private fun onStateChange(screenState: ScreenState) {
+        when (screenState) {
+            is ScreenState.Working -> {
+                val dbResponse = screenState.databaseResponse
+                detailsProgressBar.visibility = View.GONE
+                adapter.updateResults(dbResponse)
+            }
+            is ScreenState.Loading -> {
+                detailsProgressBar.visibility = View.VISIBLE
+            }
+            is ScreenState.Error -> {
+                detailsProgressBar.visibility = View.GONE
+                Log.d("DetailsActivity", screenState.error.message.toString())
+                Toast.makeText(this, screenState.error.message, Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun setRecyclerView() {
+        detailsRecyclerView.setHasFixedSize(true)
+        detailsRecyclerView.adapter = adapter
     }
 }
