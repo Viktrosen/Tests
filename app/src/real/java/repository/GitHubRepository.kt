@@ -19,7 +19,7 @@ internal class GitHubRepository(private val gitHubApi: GitHubApi) : RepositoryCo
         call?.enqueue(object : Callback<SearchResponse?> {
 
             override fun onResponse(
-                call: Call<SearchResponse?>,
+                call: Call<SearchUserResponse?>,
                 response: Response<SearchResponse?>
             ) {
                 callback.handleGitHubResponse(response)
